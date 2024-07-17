@@ -26,28 +26,6 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: Get Next Version
-      id: semver
-      uses: ietf-tools/semver-action@v1
-      with:
-        token: ${{ github.token }}
-        branch: main
-        
-    - name: Set Next Version Env Var
-      run: |
-        echo "NEXT_VERSION=$nextStrict" >> $GITHUB_ENV
-        
-    - name: Create Draft Release
-      uses: ncipollo/release-action@v1
-      with:
-        prerelease: true
-        draft: false
-        commit: ${{ github.sha }}
-        tag: ${{ env.NEXT_VERSION }}
-        name: ${{ env.NEXT_VERSION }}
-        body: '*pending*'
-        token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Build and push Docker images
       uses: docker/build-push-action@v3
       with:
@@ -56,6 +34,4 @@ jobs:
         platforms: linux/amd64,linux/arm64,linux/arm/v7
         push: true
         tags: |
-          ghcr.io/colevscode/wiki-update-companion:latest
-          ghcr.io/colevscode/wiki-update-companion:${{ env.NEXT_VERSION }}
-        
+          ghcr.io/colevscode/wiki-update-companion:latest        
