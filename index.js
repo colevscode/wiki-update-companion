@@ -7,7 +7,7 @@ async function upgrade (name, version) {
   console.info(`Finding ${name} container...`)
   const containers = await dk.listContainers({ all: true })
   const wiki = containers.find(c => {
-    return c.Names.some(n => n === `/${name}` || n === name) && (c.Image.startsWith('ghcr.io/requarks/wiki') || c.Image.startsWith('requarks/wiki'))
+    return c.Names.some(n => n === `/${name}` || n === name) && (c.Image.startsWith('ghcr.io/colevscode/synth-wiki') || c.Image.startsWith('colevscode1/wiki'))
   })
   if (!wiki) {
     throw new Error(`Could not find ${name} container.`)
@@ -29,7 +29,7 @@ async function upgrade (name, version) {
 
   console.info('Pulling latest Wiki.js image...')
   await new Promise((resolve, reject) => {
-    dk.pull(`ghcr.io/requarks/wiki:${version}`, (err, stream) => {
+    dk.pull(`ghcr.io/colevscode/synth-wiki:${version}`, (err, stream) => {
       if (err) { return reject(err) }
       dk.modem.followProgress(stream, (err) => {
         if (err) {
@@ -44,7 +44,7 @@ async function upgrade (name, version) {
   console.info('Recreating container...')
   const wkn = await dk.createContainer({
     name: name,
-    Image: `ghcr.io/requarks/wiki:${version}`,
+    Image: `ghcr.io/colevscode/synth-wiki:${version}`,
     Env: wkConfig.Config.Env,
     ExposedPorts: wkConfig.Config.ExposedPorts,
     Hostname: name,
@@ -66,7 +66,7 @@ async function main () {
     try {
       upgrade(
         request.query.container || 'wiki',
-        request.params.version || '2'
+        request.params.version || 'latest'
         )
       return { started: true }
     } catch (err) {
